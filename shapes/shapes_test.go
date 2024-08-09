@@ -1,9 +1,13 @@
 package shapes
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func TestPerimiter(t *testing.T) {
-	got := Perimeter(2.5, 2.5)
+	rect := Rectangle{2.5, 2.5}
+	got := rect.Perimeter()
 	want := 10.0
 
 	if want != got {
@@ -12,10 +16,23 @@ func TestPerimiter(t *testing.T) {
 }
 
 func TestArea(t *testing.T) {
-	got := Area(2.5, 2.5)
-	want := 6.25
+	t.Run("test area of a rectangle", func(t *testing.T) {
+		rect := Rectangle{2.5, 2.5}
+		got := rect.Area()
+		want := 6.25
 
-	if want != got {
-		t.Errorf("want %.2f, got %.2f", want, got)
-	}
+		if want != got {
+			t.Errorf("want %.2f, got %.2f", want, got)
+		}
+	})
+
+	t.Run("test area of a rectangle", func(t *testing.T) {
+		circle := Circle{10}
+		got := circle.Area()
+		want := math.Pi * 100
+
+		if want != got {
+			t.Errorf("want %g, got %g", want, got)
+		}
+	})
 }

@@ -16,23 +16,21 @@ func TestPerimiter(t *testing.T) {
 }
 
 func TestArea(t *testing.T) {
+	checkArea := func(t testing.TB, shape Shape, want float64) {
+		t.Helper()
+		got := shape.Area()
+		if got != want {
+			t.Errorf("want %f, got %f", want, got)
+		}
+	}
+
 	t.Run("test area of a rectangle", func(t *testing.T) {
 		rect := Rectangle{2.5, 2.5}
-		got := rect.Area()
-		want := 6.25
-
-		if want != got {
-			t.Errorf("want %.2f, got %.2f", want, got)
-		}
+		checkArea(t, rect, 6.25)
 	})
 
-	t.Run("test area of a rectangle", func(t *testing.T) {
+	t.Run("test area of a circle", func(t *testing.T) {
 		circle := Circle{10}
-		got := circle.Area()
-		want := math.Pi * 100
-
-		if want != got {
-			t.Errorf("want %g, got %g", want, got)
-		}
+		checkArea(t, circle, math.Pi*100)
 	})
 }

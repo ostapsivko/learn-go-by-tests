@@ -70,6 +70,16 @@ func TestUpdate(t *testing.T) {
 	})
 }
 
+func TestDelete(t *testing.T) {
+	word := "test"
+	definition := "this is just a test"
+	dictionary := Dictionary{word: definition}
+
+	dictionary.Delete(word)
+	_, err := dictionary.Search(word)
+	assertError(t, ErrNotFound, err)
+}
+
 func assertError(t testing.TB, want, got error) {
 	t.Helper()
 

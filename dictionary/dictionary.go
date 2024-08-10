@@ -1,8 +1,9 @@
 package dictionary
 
 var (
-	ErrNotFound   = DictionaryErr("could not find the word you were looking for")
-	ErrWordExists = DictionaryErr("this word already has a definition")
+	ErrNotFound         = DictionaryErr("could not find the word you were looking for")
+	ErrWordExists       = DictionaryErr("this word already has a definition")
+	ErrWordDoesNotExist = DictionaryErr("this word is not in the dictionary")
 )
 
 type Dictionary map[string]string
@@ -31,6 +32,21 @@ func (d Dictionary) Add(word, meaning string) error {
 		d[word] = meaning
 	case nil:
 		return ErrWordExists
+	default:
+		return err
+	}
+
+	return err
+}
+
+func (d Dictionary) Update(word, newMeaning string) error {
+	_, err := d.Search(word)
+
+	switch err {
+	case ErrNotFound:
+		return ErrWordDoesNotExist
+	case nil:
+		d[word] = newMeaning
 	default:
 		return err
 	}

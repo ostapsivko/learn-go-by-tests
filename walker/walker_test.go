@@ -52,6 +52,14 @@ func TestWalk(t *testing.T) {
 			},
 			[]string{"Azdab", "Mykolaiv"},
 		},
+		{
+			"pointers to things",
+			&Person{
+				"Azdab",
+				Profile{27, "Mykolaiv"},
+			},
+			[]string{"Azdab", "Mykolaiv"},
+		},
 	}
 
 	for _, test := range cases {

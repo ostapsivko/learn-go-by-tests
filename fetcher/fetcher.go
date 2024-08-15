@@ -7,10 +7,24 @@ import (
 
 type Fetcher interface {
 	Fetch() string
+	Cancel()
 }
 
 func Server(fetcher Fetcher) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, fetcher.Fetch())
+		ctx := r.Context()
+
+		data := make(chan string, 1)
+
+		go func() {
+			data <- fetcher.Fetch()
+		}()
+
+		select {
+		case d := <-data:
+			fmt.Fprint(w, d)
+		case <-ctx.Done():
+			fetcher.Cancel()
+		}
 	}
 }

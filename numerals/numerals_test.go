@@ -50,6 +50,8 @@ func TestRomanNumerals(t *testing.T) {
 		{"900 to CM", 900, "CM"},
 		{"1000 to M", 1000, "M"},
 		{"1500 to MD", 1500, "MD"},
+		{"1984 to MCMLXXXIV", 1984, "MCMLXXXIV"},
+		{"1997 to MCMXCVII", 1997, "MCMXCVII"},
 	}
 
 	for _, test := range cases {

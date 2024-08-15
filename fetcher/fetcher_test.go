@@ -2,6 +2,8 @@ package fetcher
 
 import (
 	"context"
+	"errors"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -9,32 +11,52 @@ import (
 )
 
 type SpyFetcher struct {
-	response  string
-	cancelled bool
-	t         *testing.T
+	response string
+	t        *testing.T
 }
 
-func (s *SpyFetcher) Fetch() string {
-	time.Sleep(100 * time.Millisecond)
-	return s.response
-}
+func (s *SpyFetcher) Fetch(ctx context.Context) (string, error) {
+	data := make(chan string, 1)
 
-func (s *SpyFetcher) Cancel() {
-	s.cancelled = true
-}
+	go func() {
+		var result string
+		for _, c := range s.response {
+			select {
+			case <-ctx.Done():
+				log.Println("spy store got cancelled")
+				return
+			default:
+				time.Sleep(10 * time.Millisecond)
+				result += string(c)
+			}
+		}
+		data <- result
+	}()
 
-func (s *SpyFetcher) assertWasCancelled() {
-	s.t.Helper()
-	if !s.cancelled {
-		s.t.Error("fetcher was not told to cancel")
+	select {
+	case <-ctx.Done():
+		return "", ctx.Err()
+	case res := <-data:
+		return res, nil
 	}
 }
 
-func (s *SpyFetcher) assertWasNotCancelled() {
-	s.t.Helper()
-	if s.cancelled {
-		s.t.Error("fetcher was not expected to cancel")
-	}
+type SpyResponseWriter struct {
+	written bool
+}
+
+func (s *SpyResponseWriter) Header() http.Header {
+	s.written = true
+	return nil
+}
+
+func (s *SpyResponseWriter) Write([]byte) (int, error) {
+	s.written = true
+	return 0, errors.New("not implemented")
+}
+
+func (s *SpyResponseWriter) WriteHeader(statusCode int) {
+	s.written = true
 }
 
 func TestServer(t *testing.T) {
@@ -51,8 +73,6 @@ func TestServer(t *testing.T) {
 		if response.Body.String() != data {
 			t.Errorf(`got "%s", want "%s"`, response.Body.String(), data)
 		}
-
-		fetcher.assertWasNotCancelled()
 	})
 
 	t.Run("tells fetcher to cancel work if request is cancelled", func(t *testing.T) {
@@ -67,9 +87,11 @@ func TestServer(t *testing.T) {
 
 		request = request.WithContext(cancelCtx)
 
-		response := httptest.NewRecorder()
+		response := &SpyResponseWriter{}
 		srv.ServeHTTP(response, request)
 
-		fetcher.assertWasCancelled()
+		if response.written {
+			t.Error("did not expect to write the respose in case of cancellation")
+		}
 	})
 }

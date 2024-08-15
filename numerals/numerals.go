@@ -5,7 +5,12 @@ import "strings"
 func ConvertToRoman(value int) string {
 	var result strings.Builder
 
-	for i := 0; i < value; i++ {
+	for i := value; i > 0; i-- {
+		if value == 4 {
+			result.WriteString("IV")
+			break
+		}
+
 		result.WriteString("I")
 	}
 

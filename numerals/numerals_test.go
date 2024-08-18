@@ -75,6 +75,36 @@ func TestConvertingToArabic(t *testing.T) {
 	}
 }
 
+func TestConvertingToArabicRec(t *testing.T) {
+	for _, test := range cases {
+		t.Run(fmt.Sprintf("%q gets converted to %q", test.Roman, test.Arabic), func(t *testing.T) {
+			got := ConvertToArabicRec(test.Roman)
+			if got != test.Arabic {
+				t.Errorf("got %d, want %d", got, test.Arabic)
+			}
+		})
+	}
+}
+
+func BenchmarkConvertingToArabic(b *testing.B) {
+	testCase := cases[len(cases)-1]
+
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		ConvertToArabic(testCase.Roman)
+	}
+}
+
+func BenchmarkConvertingToArabicRec(b *testing.B) {
+	testCase := cases[len(cases)-1]
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ConvertToArabicRec(testCase.Roman)
+	}
+}
+
 func assertConversionResult(t testing.TB, got, want string) {
 	t.Helper()
 	if want != got {

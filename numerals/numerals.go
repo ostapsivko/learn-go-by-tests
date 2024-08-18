@@ -48,3 +48,21 @@ func ConvertToArabic(roman string) int {
 
 	return arabic
 }
+
+func ConvertToArabicRec(roman string) int {
+	return convertRec(roman, allRomanNumerals, 0)
+}
+
+func convertRec(roman string, numerals []RomanNumeral, currentVal int) int {
+	if len(roman) == 0 {
+		return currentVal
+	}
+
+	numeral := numerals[0]
+
+	if strings.HasPrefix(roman, numeral.Symbol) {
+		return convertRec(strings.TrimPrefix(roman, numeral.Symbol), numerals, currentVal+numeral.Value)
+	}
+
+	return convertRec(roman, numerals[1:], currentVal)
+}

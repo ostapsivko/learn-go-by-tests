@@ -20,7 +20,7 @@ func TestSecondsInRadians(t *testing.T) {
 	for _, test := range cases {
 		t.Run(testName(test.time), func(t *testing.T) {
 			got := secondsInRadians(test.time)
-			if test.angle != got {
+			if !roughlyEqualFloat64(got, test.angle) {
 				t.Fatalf("want %v radians, got %v", test.angle, got)
 			}
 		})
@@ -39,7 +39,28 @@ func TestMinutesInRadians(t *testing.T) {
 	for _, test := range cases {
 		t.Run(testName(test.time), func(t *testing.T) {
 			got := minutesInRadians(test.time)
-			if got != test.angle {
+			if !roughlyEqualFloat64(got, test.angle) {
+				t.Fatalf("want %v radians, got %v", test.angle, got)
+			}
+		})
+	}
+}
+
+func TestHoursInRadians(t *testing.T) {
+	cases := []struct {
+		time  time.Time
+		angle float64
+	}{
+		{simpleTime(6, 0, 0), math.Pi},
+		{simpleTime(21, 0, 0), math.Pi * 1.5},
+		{simpleTime(0, 0, 0), 0},
+		{simpleTime(0, 1, 30), math.Pi / ((6 * 60 * 60) / 90)},
+	}
+
+	for _, test := range cases {
+		t.Run(testName(test.time), func(t *testing.T) {
+			got := hoursInRadians(test.time)
+			if !roughlyEqualFloat64(got, test.angle) {
 				t.Fatalf("want %v radians, got %v", test.angle, got)
 			}
 		})
@@ -74,11 +95,30 @@ func TestMinuteHandPoint(t *testing.T) {
 		{simpleTime(0, 45, 0), Point{-1, 0}},
 	}
 
-	for _, c := range cases {
-		t.Run(testName(c.time), func(t *testing.T) {
-			got := minuteHandPoint(c.time)
-			if !roughlyEqualPoint(got, c.point) {
-				t.Fatalf("wanted %v Point, got %v", c.point, got)
+	for _, test := range cases {
+		t.Run(testName(test.time), func(t *testing.T) {
+			got := minuteHandPoint(test.time)
+			if !roughlyEqualPoint(got, test.point) {
+				t.Fatalf("wanted %v Point, got %v", test.point, got)
+			}
+		})
+	}
+}
+
+func TestHourHandPoint(t *testing.T) {
+	cases := []struct {
+		time  time.Time
+		point Point
+	}{
+		{simpleTime(6, 0, 0), Point{0, -1}},
+		{simpleTime(21, 0, 0), Point{-1, 0}},
+	}
+
+	for _, test := range cases {
+		t.Run(testName(test.time), func(t *testing.T) {
+			got := hourHandPoint(test.time)
+			if !roughlyEqualPoint(got, test.point) {
+				t.Fatalf("wanted %v Point, got %v", test.point, got)
 			}
 		})
 	}

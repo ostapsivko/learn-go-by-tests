@@ -9,10 +9,12 @@ import (
 const (
 	titleSeparator       = "Title: "
 	descriptionSeparator = "Description: "
+	tagsSeparator        = "Tags: "
 )
 
 type Post struct {
 	Title, Description string
+	Tags               []string
 }
 
 func newPost(postReader io.Reader) (Post, error) {
@@ -25,7 +27,10 @@ func newPost(postReader io.Reader) (Post, error) {
 
 	title := readLine(titleSeparator)
 	description := readLine(descriptionSeparator)
+	tagsLine := readLine(tagsSeparator)
 
-	post := Post{Title: title, Description: description}
+	tags := strings.Split(tagsLine, ", ")
+
+	post := Post{Title: title, Description: description, Tags: tags}
 	return post, nil
 }

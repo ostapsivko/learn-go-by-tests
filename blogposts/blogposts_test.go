@@ -19,9 +19,11 @@ func (s StubFailingFS) Open(name string) (fs.File, error) {
 func TestNewBlogPosts(t *testing.T) {
 	const (
 		firstBody = `Title: Post 1
-Description: Description 1`
+Description: Description 1
+Tags: tag1, tag2`
 		secondBody = `Title: Post 2
-Description: Description 2`
+Description: Description 2
+Tags: tag1, tag2`
 	)
 
 	t.Run("checking file contents", func(t *testing.T) {
@@ -32,7 +34,7 @@ Description: Description 2`
 
 		posts, _ := blogposts.NewBlogPostsFromFS(fs)
 		got := posts[0]
-		assertPost(t, got, blogposts.Post{Title: "Post 1", Description: "Description 1"})
+		assertPost(t, got, blogposts.Post{Title: "Post 1", Description: "Description 1", Tags: []string{"tag1", "tag2"}})
 	})
 
 	t.Run("reading with failing stub", func(t *testing.T) {

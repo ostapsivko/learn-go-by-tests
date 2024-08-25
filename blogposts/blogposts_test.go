@@ -20,10 +20,15 @@ func TestNewBlogPosts(t *testing.T) {
 	const (
 		firstBody = `Title: Post 1
 Description: Description 1
-Tags: tag1, tag2`
+Tags: tag1, tag2
+---
+Hello
+world!`
 		secondBody = `Title: Post 2
 Description: Description 2
-Tags: tag1, tag2`
+Tags: tag1, tag2
+---
+Hello world!`
 	)
 
 	t.Run("checking file contents", func(t *testing.T) {
@@ -34,7 +39,16 @@ Tags: tag1, tag2`
 
 		posts, _ := blogposts.NewBlogPostsFromFS(fs)
 		got := posts[0]
-		assertPost(t, got, blogposts.Post{Title: "Post 1", Description: "Description 1", Tags: []string{"tag1", "tag2"}})
+
+		want := blogposts.Post{
+			Title:       "Post 1",
+			Description: "Description 1",
+			Tags:        []string{"tag1", "tag2"},
+			Body: `Hello
+world!`,
+		}
+
+		assertPost(t, got, want)
 	})
 
 	t.Run("reading with failing stub", func(t *testing.T) {

@@ -17,20 +17,22 @@ func (s StubFailingFS) Open(name string) (fs.File, error) {
 }
 
 func TestNewBlogPosts(t *testing.T) {
+	const (
+		firstBody = `Title: Post 1
+Description: Description 1`
+		secondBody = `Title: Post 2
+Description: Description 2`
+	)
+
 	t.Run("checking file contents", func(t *testing.T) {
 		fs := fstest.MapFS{
-			"hello world.md":  {Data: []byte("Title: Post 1")},
-			"hello-world2.md": {Data: []byte("Title: Post 2")},
+			"hello world.md":  {Data: []byte(firstBody)},
+			"hello-world2.md": {Data: []byte(secondBody)},
 		}
 
 		posts, _ := blogposts.NewBlogPostsFromFS(fs)
-
 		got := posts[0]
-		want := blogposts.Post{Title: "Post 1"}
-
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("got %+v, want %+v", got, want)
-		}
+		assertPost(t, got, blogposts.Post{Title: "Post 1", Description: "Description 1"})
 	})
 
 	t.Run("reading with failing stub", func(t *testing.T) {
@@ -40,4 +42,11 @@ func TestNewBlogPosts(t *testing.T) {
 			t.Fatal("expected an error, but got none")
 		}
 	})
+}
+
+func assertPost(t *testing.T, got, want blogposts.Post) {
+	t.Helper()
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
+	}
 }

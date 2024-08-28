@@ -11,21 +11,31 @@ var (
 	postTemplates embed.FS
 )
 
-type Post struct {
-	Title, Body, Description string
-	Tags                     []string
+type PostRenderer struct {
+	templ *template.Template
 }
 
-func Render(writer io.Writer, post Post) error {
+func NewPostRenderer() (*PostRenderer, error) {
 	template, err := template.ParseFS(postTemplates, "templates/*.gohtml")
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if err := template.Execute(writer, post); err != nil {
+	return &PostRenderer{templ: template}, nil
+
+}
+
+func (r *PostRenderer) Render(writer io.Writer, post Post) error {
+
+	if err := r.templ.ExecuteTemplate(writer, "blog.gohtml", post); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+type Post struct {
+	Title, Body, Description string
+	Tags                     []string
 }

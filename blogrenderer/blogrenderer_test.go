@@ -46,7 +46,7 @@ func TestRender(t *testing.T) {
 		approvals.VerifyString(t, buf.String())
 	})
 
-	t.Run("renders and index of posts", func(t *testing.T) {
+	t.Run("renders an index of posts", func(t *testing.T) {
 		buf := bytes.Buffer{}
 		posts := []blogrenderer.Post{{Title: "Hello World"}, {Title: "Hello World 2"}}
 

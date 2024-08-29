@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/yuin/goldmark"
-	"github.com/yuin/goldmark/renderer/html"
 )
 
 var (
@@ -19,11 +18,11 @@ var (
 type Post struct {
 	Title, Body, Description string
 	Tags                     []string
-	ProcessedBody            template.HTML
 }
 
 type PostViewModel struct {
 	Post
+	HTMLBody template.HTML
 }
 
 type PostRenderer struct {
@@ -38,11 +37,7 @@ func NewPostRenderer() (*PostRenderer, error) {
 		return nil, err
 	}
 
-	md := goldmark.New(
-		goldmark.WithRendererOptions(
-			html.WithUnsafe(),
-		),
-	)
+	md := goldmark.New()
 
 	return &PostRenderer{templ: template, converter: md}, nil
 
@@ -55,9 +50,11 @@ func (r *PostRenderer) Render(writer io.Writer, post Post) error {
 		return err
 	}
 
-	post.ProcessedBody = template.HTML(buf.String())
+	pvm := NewViewModel(post)
 
-	if err := r.templ.ExecuteTemplate(writer, "blog.gohtml", post); err != nil {
+	pvm.HTMLBody = template.HTML(buf.String())
+
+	if err := r.templ.ExecuteTemplate(writer, "blog.gohtml", pvm); err != nil {
 		return err
 	}
 

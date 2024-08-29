@@ -5,6 +5,7 @@ import (
 	"embed"
 	"html/template"
 	"io"
+	"strings"
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/renderer/html"
@@ -14,6 +15,16 @@ var (
 	//go:embed "templates/*"
 	postTemplates embed.FS
 )
+
+type Post struct {
+	Title, Body, Description string
+	Tags                     []string
+	ProcessedBody            template.HTML
+}
+
+type PostViewModel struct {
+	Post
+}
 
 type PostRenderer struct {
 	templ     *template.Template
@@ -53,8 +64,24 @@ func (r *PostRenderer) Render(writer io.Writer, post Post) error {
 	return nil
 }
 
-type Post struct {
-	Title, Body, Description string
-	Tags                     []string
-	ProcessedBody            template.HTML
+func (r *PostRenderer) RenderIndex(writer io.Writer, posts []Post) error {
+	var viewModels []PostViewModel
+
+	for _, post := range posts {
+		viewModels = append(viewModels, NewViewModel(post))
+	}
+
+	if err := r.templ.ExecuteTemplate(writer, "index.gohtml", viewModels); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func NewViewModel(post Post) PostViewModel {
+	return PostViewModel{Post: post}
+}
+
+func (pvm *PostViewModel) SanitisedTitle() string {
+	return strings.ToLower(strings.Replace(pvm.Title, " ", "-", -1))
 }

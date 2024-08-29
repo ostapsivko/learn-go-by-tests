@@ -9,11 +9,22 @@ import (
 	approvals "github.com/approvals/go-approval-tests"
 )
 
+const (
+	body = "BUILD\n" +
+		"- \n" +
+		"Go to main directory. Run `dotnet run` in terminal.\n" +
+		"\n" +
+		"Hi! I'm your first Markdown file in **StackEdit**. \n" +
+		"If you want to learn about StackEdit, you can read me.\n" +
+		"If you want to play with Markdown, you can edit me.\n" +
+		"Once you have finished with me, you can create new files by opening the **file explorer** on the left corner of the navigation bar."
+)
+
 func TestRender(t *testing.T) {
 	var (
 		aPost = blogrenderer.Post{
 			Title:       "Hello World!",
-			Body:        "This is a post",
+			Body:        body,
 			Description: "This is a description",
 			Tags:        []string{"tdd", "go"},
 		}

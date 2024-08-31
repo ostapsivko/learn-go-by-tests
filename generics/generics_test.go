@@ -6,19 +6,21 @@ func TestAssertFunctions(t *testing.T) {
 	t.Run("asserting on integers", func(t *testing.T) {
 		AssertEqual(t, 1, 1)
 		AssertNotEqual(t, 1, 2)
+		AssertEqual(t, "hello", "hello")
+		AssertNotEqual(t, "hello", "bye")
 	})
 }
 
-func AssertEqual(t *testing.T, got, want int) {
+func AssertEqual(t *testing.T, got, want any) {
 	t.Helper()
 	if got != want {
-		t.Errorf("got %d, want %d", got, want)
+		t.Errorf("got %+v, want %+v", got, want)
 	}
 }
 
-func AssertNotEqual(t *testing.T, got, want int) {
+func AssertNotEqual(t *testing.T, got, want any) {
 	t.Helper()
 	if got == want {
-		t.Errorf("did not want %d", got)
+		t.Errorf("did not want %+v", got)
 	}
 }

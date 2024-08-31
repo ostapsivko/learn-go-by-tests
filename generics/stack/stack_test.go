@@ -4,44 +4,22 @@ import (
 	"testing"
 )
 
-type StackOfInts struct {
-	values []int
+type Stack[T any] struct {
+	values []T
 }
 
-func (s *StackOfInts) Push(value int) {
+func (s *Stack[T]) Push(value T) {
 	s.values = append(s.values, value)
 }
 
-func (s *StackOfInts) IsEmpty() bool {
+func (s *Stack[T]) IsEmpty() bool {
 	return len(s.values) == 0
 }
 
-func (s *StackOfInts) Pop() (int, bool) {
+func (s *Stack[T]) Pop() (T, bool) {
 	if s.IsEmpty() {
-		return 0, false
-	}
-
-	index := len(s.values) - 1
-	el := s.values[index]
-	s.values = s.values[:index]
-	return el, true
-}
-
-type StackOfStrings struct {
-	values []string
-}
-
-func (s *StackOfStrings) Push(value string) {
-	s.values = append(s.values, value)
-}
-
-func (s *StackOfStrings) IsEmpty() bool {
-	return len(s.values) == 0
-}
-
-func (s *StackOfStrings) Pop() (string, bool) {
-	if s.IsEmpty() {
-		return "", false
+		var zero T
+		return zero, false
 	}
 
 	index := len(s.values) - 1
@@ -52,7 +30,7 @@ func (s *StackOfStrings) Pop() (string, bool) {
 
 func TestStack(t *testing.T) {
 	t.Run("stack of ints", func(t *testing.T) {
-		myStackOfInts := StackOfInts{}
+		myStackOfInts := new(Stack[int])
 
 		//check stack is empty
 		AssertTrue(t, myStackOfInts.IsEmpty())
@@ -71,10 +49,17 @@ func TestStack(t *testing.T) {
 		AssertTrue(t, ok)
 		AssertEqual(t, val, 1)
 		AssertTrue(t, myStackOfInts.IsEmpty())
+
+		//getting typed numbers back
+		myStackOfInts.Push(1)
+		myStackOfInts.Push(2)
+		first, _ := myStackOfInts.Pop()
+		second, _ := myStackOfInts.Pop()
+		AssertEqual(t, first+second, 3)
 	})
 
 	t.Run("stack of strings", func(t *testing.T) {
-		myStackOfStrings := StackOfStrings{}
+		myStackOfStrings := new(Stack[string])
 
 		//check stack is empty
 		AssertTrue(t, myStackOfStrings.IsEmpty())

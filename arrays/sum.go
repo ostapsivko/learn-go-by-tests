@@ -6,18 +6,18 @@ type Transaction struct {
 }
 
 func BalanceFor(transactions []Transaction, name string) float64 {
-	sum := 0.0
-	for _, t := range transactions {
+	adjustBalance := func(current float64, t Transaction) float64 {
 		if t.To == name {
-			sum += t.Sum
+			current += t.Sum
 		}
 
 		if t.From == name {
-			sum -= t.Sum
+			current -= t.Sum
 		}
+		return current
 	}
 
-	return sum
+	return Reduce(transactions, adjustBalance, 0.0)
 }
 
 func Sum(numbers []int) int {
@@ -40,7 +40,7 @@ func SumAllTails(numbersToSum ...[]int) []int {
 	return Reduce(numbersToSum, sumTail, []int{})
 }
 
-func Reduce[T any](values []T, f func(T, T) T, zero T) T {
+func Reduce[T, Y any](values []T, f func(Y, T) Y, zero Y) Y {
 	var sum = zero
 
 	for _, value := range values {

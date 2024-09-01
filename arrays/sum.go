@@ -1,5 +1,9 @@
 package arrays
 
+type Person struct {
+	Name string
+}
+
 type Transaction struct {
 	From, To string
 	Sum      float64
@@ -72,4 +76,16 @@ func Reduce[T, Y any](values []T, f func(Y, T) Y, zero Y) Y {
 		sum = f(sum, value)
 	}
 	return sum
+}
+
+func Find[A any](values []A, predicate func(A) bool) (A, bool) {
+	var zero A
+
+	for _, value := range values {
+		if predicate(value) {
+			return value, true
+		}
+	}
+
+	return zero, false
 }

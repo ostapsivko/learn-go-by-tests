@@ -1,5 +1,25 @@
 package arrays
 
+type Transaction struct {
+	From, To string
+	Sum      float64
+}
+
+func BalanceFor(transactions []Transaction, name string) float64 {
+	sum := 0.0
+	for _, t := range transactions {
+		if t.To == name {
+			sum += t.Sum
+		}
+
+		if t.From == name {
+			sum -= t.Sum
+		}
+	}
+
+	return sum
+}
+
 func Sum(numbers []int) int {
 	sum := func(x, y int) int {
 		return x + y

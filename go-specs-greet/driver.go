@@ -7,10 +7,11 @@ import (
 
 type Driver struct {
 	BaseUrl string
+	Client  *http.Client
 }
 
 func (d Driver) Greet() (string, error) {
-	res, err := http.Get(d.BaseUrl + "/greet")
+	res, err := d.Client.Get(d.BaseUrl + "/greet")
 	if err != nil {
 		return "", err
 	}

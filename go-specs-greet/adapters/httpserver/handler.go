@@ -6,7 +6,12 @@ import (
 	"net/http"
 )
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func HandleGreet(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 	fmt.Fprint(w, interactions.Greet(name))
+}
+
+func HandleCurse(w http.ResponseWriter, r *http.Request) {
+	name := r.URL.Query().Get("name")
+	fmt.Fprint(w, interactions.Curse(name))
 }

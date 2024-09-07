@@ -3,9 +3,9 @@ package interactions
 import "fmt"
 
 func Greet(name string) string {
-	return fmt.Sprintf("Hello, %s!", name)
-}
+	if name == "" {
+		name = "World"
+	}
 
-func Curse(name string) string {
-	return fmt.Sprintf("Go to hell, %s!", name)
+	return fmt.Sprintf("Hello, %s!", name)
 }

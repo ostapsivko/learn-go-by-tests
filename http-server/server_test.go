@@ -176,3 +176,11 @@ func assertContentType(t testing.TB, got, want string) {
 		t.Errorf("response did not have content-type header %v, got %v", want, got)
 	}
 }
+
+func assertNoError(t testing.TB, err error) {
+	t.Helper()
+
+	if err != nil {
+		t.Fatalf("did not expect an error but got one, %v", err)
+	}
+}

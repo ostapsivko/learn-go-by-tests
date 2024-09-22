@@ -1,16 +1,14 @@
 package poker_test
 
 import (
-	"bytes"
 	"fmt"
 	"poker"
-	"strings"
 	"testing"
 	"time"
 )
 
 func TestGame_Start(t *testing.T) {
-	t.Run("schedules printing of blind values", func(t *testing.T) {
+	t.Run("schedules alerts of blind values for 5 players at game start", func(t *testing.T) {
 		store := &poker.StubPlayerStore{}
 		blindAlerter := &SpyBlindAlerter{}
 		game := poker.NewGame(store, blindAlerter)
@@ -34,21 +32,11 @@ func TestGame_Start(t *testing.T) {
 		checkSchedulingCases(t, cases, blindAlerter)
 	})
 
-	t.Run("prompts user to enter the number of players", func(t *testing.T) {
-		output := &bytes.Buffer{}
-		input := strings.NewReader("7\n")
+	t.Run("schedules alerts of blind values for 7 players at game start", func(t *testing.T) {
 		blindAlerter := &SpyBlindAlerter{}
 		game := poker.NewGame(dummyPlayerStore, blindAlerter)
 
-		cli := poker.NewCLI(input, output, game)
-		cli.PlayPoker()
-
-		got := output.String()
-		want := poker.PlayerPrompt
-
-		if got != want {
-			t.Errorf("got %q, want %q", got, want)
-		}
+		game.Start(7)
 
 		cases := []scheduledAlert{
 			{0 * time.Second, 100},

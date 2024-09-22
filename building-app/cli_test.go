@@ -85,6 +85,18 @@ func TestCLI(t *testing.T) {
 		assertGameNotStarted(t, game)
 		assertMessagesSentToUser(t, out, poker.PlayerPrompt, poker.BadPlayerInputErrMsg)
 	})
+
+	t.Run("handles incorrect win message", func(t *testing.T) {
+		out := &bytes.Buffer{}
+		game := &GameSpy{}
+		in := userSends("3", "Sinner is a killer")
+
+		cli := poker.NewCLI(in, out, game)
+		cli.PlayPoker()
+
+		assertGameNotFinished(t, game)
+		assertMessagesSentToUser(t, out, poker.PlayerPrompt, poker.BadWinnerInputErrMsg)
+	})
 }
 
 func assertMessagesSentToUser(t testing.TB, out *bytes.Buffer, messages ...string) {

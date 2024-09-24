@@ -112,9 +112,11 @@ func TestGame(t *testing.T) {
 		poker.AssertStatusCode(t, response.Code, http.StatusOK)
 	})
 
-	t.Run("start a game with 3 players and declare Azdab as a winner", func(t *testing.T) {
-		game := &poker.GameSpy{}
+	t.Run("start a game with 3 players, send a blind alert and declare Azdab as a winner", func(t *testing.T) {
 		winner := "Azdab"
+		wantedAlert := "Blind is 100"
+		game := &poker.GameSpy{BlindAlert: []byte(wantedAlert)}
+
 		playerServer := mustMakePlayerServer(t, dummyPlayerStore, game)
 		server := httptest.NewServer(playerServer)
 		defer server.Close()
@@ -126,11 +128,22 @@ func TestGame(t *testing.T) {
 		sendWsMessage(t, ws, "3")
 		sendWsMessage(t, ws, winner)
 
-		//TODO
-		time.Sleep(10 * time.Millisecond)
 		assertGameStartedWith(t, game, 3)
 		assertWinner(t, game, winner)
+
+		within(t, 1*time.Second, func() { assertWebsocketGotMsg(t, ws, wantedAlert) })
+
 	})
+}
+
+func assertWebsocketGotMsg(t testing.TB, conn *websocket.Conn, want string) {
+	t.Helper()
+
+	_, msg, _ := conn.ReadMessage()
+
+	if string(msg) != want {
+		t.Errorf("got alert %s, want %s", string(msg), want)
+	}
 }
 
 func newGetScoreRequest(name string) *http.Request {
@@ -189,4 +202,32 @@ func sendWsMessage(t testing.TB, conn *websocket.Conn, message string) {
 	if err := conn.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
 		t.Fatalf("could not send message over ws connection %v", err)
 	}
+}
+
+func within(t testing.TB, d time.Duration, assert func()) {
+	t.Helper()
+
+	done := make(chan struct{}, 1)
+
+	go func() {
+		assert()
+		done <- struct{}{}
+	}()
+
+	select {
+	case <-time.After(d):
+		t.Error("timed out")
+	case <-done:
+	}
+}
+
+func retryUntil(d time.Duration, f func() bool) bool {
+	deadline := time.Now().Add(d)
+	for time.Now().Before(deadline) {
+		if f() {
+			return true
+		}
+	}
+
+	return false
 }

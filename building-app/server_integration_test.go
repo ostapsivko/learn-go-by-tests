@@ -15,7 +15,7 @@ func TestRecoringWinsAndRetrievingThem(t *testing.T) {
 
 	poker.AssertNoError(t, err)
 
-	game := poker.NewGame(store, &SpyBlindAlerter{})
+	game := poker.NewTexasHoldem(store, &SpyBlindAlerter{})
 	server, err := poker.NewPlayerServer(store, game)
 	player := "Pepper"
 	poker.AssertNoError(t, err)

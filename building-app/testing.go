@@ -25,15 +25,17 @@ func (s *StubPlayerStore) GetLeague() League {
 }
 
 type GameSpy struct {
+	StartCalled  bool
 	StartedWith  int
 	FinishedWith string
-	StartCalled  bool
 	FinishCalled bool
+	BlindAlert   []byte
 }
 
 func (g *GameSpy) Start(numberOfPlayers int, destination io.Writer) {
 	g.StartedWith = numberOfPlayers
 	g.StartCalled = true
+	destination.Write(g.BlindAlert)
 }
 
 func (g *GameSpy) Finish(winner string) {

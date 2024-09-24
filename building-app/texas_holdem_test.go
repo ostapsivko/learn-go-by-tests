@@ -12,7 +12,7 @@ func TestGame_Start(t *testing.T) {
 	t.Run("schedules alerts of blind values for 5 players at game start", func(t *testing.T) {
 		store := &poker.StubPlayerStore{}
 		blindAlerter := &SpyBlindAlerter{}
-		game := poker.NewGame(store, blindAlerter)
+		game := poker.NewTexasHoldem(store, blindAlerter)
 
 		game.Start(5, io.Discard)
 
@@ -35,7 +35,7 @@ func TestGame_Start(t *testing.T) {
 
 	t.Run("schedules alerts of blind values for 7 players at game start", func(t *testing.T) {
 		blindAlerter := &SpyBlindAlerter{}
-		game := poker.NewGame(dummyPlayerStore, blindAlerter)
+		game := poker.NewTexasHoldem(dummyPlayerStore, blindAlerter)
 
 		game.Start(7, io.Discard)
 
@@ -52,7 +52,7 @@ func TestGame_Start(t *testing.T) {
 
 func TestGame_Finish(t *testing.T) {
 	store := &poker.StubPlayerStore{}
-	game := poker.NewGame(store, dummySpyAlerter)
+	game := poker.NewTexasHoldem(store, dummySpyAlerter)
 	winner := "Oleksandr"
 
 	game.Finish(winner)

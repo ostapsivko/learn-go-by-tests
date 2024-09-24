@@ -96,7 +96,11 @@ func assertMessagesSentToUser(t testing.TB, out *bytes.Buffer, messages ...strin
 func assertGameStartedWith(t testing.TB, game *poker.GameSpy, players int) {
 	t.Helper()
 
-	if players != game.StartedWith {
+	passed := retryUntil(500*time.Millisecond, func() bool {
+		return game.StartedWith == players
+	})
+
+	if !passed {
 		t.Errorf("players started with does not match expected value - got %q, want %q", game.StartedWith, players)
 	}
 }
@@ -104,7 +108,11 @@ func assertGameStartedWith(t testing.TB, game *poker.GameSpy, players int) {
 func assertWinner(t testing.TB, game *poker.GameSpy, winner string) {
 	t.Helper()
 
-	if winner != game.FinishedWith {
+	passed := retryUntil(500*time.Millisecond, func() bool {
+		return game.FinishedWith == winner
+	})
+
+	if !passed {
 		t.Errorf("winner with does not match expected value - got %q, want %q", game.FinishedWith, winner)
 	}
 }

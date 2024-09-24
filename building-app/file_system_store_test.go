@@ -7,7 +7,7 @@ import (
 
 func TestFileSystemStore(t *testing.T) {
 	t.Run("league from a reader", func(t *testing.T) {
-		database, cleanData := createTempFile(t, `[
+		database, cleanData := CreateTempFile(t, `[
 		{"Name": "Azdab", "Score": 10},
 		{"Name": "Andrii", "Score": 33}]`)
 		defer cleanData()
@@ -30,7 +30,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("get player score", func(t *testing.T) {
-		database, cleanData := createTempFile(t, `[
+		database, cleanData := CreateTempFile(t, `[
 		{"Name": "Azdab", "Score": 10},
 		{"Name": "Andrii", "Score": 33}]`)
 		defer cleanData()
@@ -45,7 +45,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("store wins for existing players", func(t *testing.T) {
-		database, cleanData := createTempFile(t, `[
+		database, cleanData := CreateTempFile(t, `[
 			{"Name": "Azdab", "Score": 10},
 			{"Name": "Andrii", "Score": 33}]`)
 		defer cleanData()
@@ -62,7 +62,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("store wins for new players", func(t *testing.T) {
-		database, cleanData := createTempFile(t, `[
+		database, cleanData := CreateTempFile(t, `[
 			{"Name": "Azdab", "Score": 10},
 			{"Name": "Andrii", "Score": 33}]`)
 
@@ -80,7 +80,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("works with an empty file", func(t *testing.T) {
-		database, cleanData := createTempFile(t, "")
+		database, cleanData := CreateTempFile(t, "")
 
 		defer cleanData()
 
@@ -90,7 +90,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 
 	t.Run("league sorted", func(t *testing.T) {
-		database, cleanData := createTempFile(t, `[
+		database, cleanData := CreateTempFile(t, `[
 			{"Name": "Azdab", "Score": 10},
 			{"Name": "Andrii", "Score": 33}]`)
 
@@ -114,7 +114,7 @@ func TestFileSystemStore(t *testing.T) {
 	})
 }
 
-func createTempFile(t testing.TB, initialData string) (*os.File, func()) {
+func CreateTempFile(t testing.TB, initialData string) (*os.File, func()) {
 	t.Helper()
 
 	tmpfile, err := os.CreateTemp("", "db")

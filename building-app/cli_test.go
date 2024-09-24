@@ -33,27 +33,10 @@ var (
 	dummyStdOut      = &bytes.Buffer{}
 )
 
-type GameSpy struct {
-	StartedWith  int
-	FinishedWith string
-	StartCalled  bool
-	FinishCalled bool
-}
-
-func (g *GameSpy) Start(numberOfPlayers int, destination io.Writer) {
-	g.StartedWith = numberOfPlayers
-	g.StartCalled = true
-}
-
-func (g *GameSpy) Finish(winner string) {
-	g.FinishedWith = winner
-	g.FinishCalled = true
-}
-
 func TestCLI(t *testing.T) {
 	t.Run("starts game with 5 players and record Azdab win from user input", func(t *testing.T) {
 		in := userSends("5", "Azdab wins")
-		game := &GameSpy{}
+		game := &poker.GameSpy{}
 		out := &bytes.Buffer{}
 
 		cli := poker.NewCLI(in, out, game)
@@ -66,7 +49,7 @@ func TestCLI(t *testing.T) {
 
 	t.Run("start game with 6 players and record Andrii win from user input", func(t *testing.T) {
 		in := userSends("6", "Andrii wins")
-		game := &GameSpy{}
+		game := &poker.GameSpy{}
 
 		cli := poker.NewCLI(in, dummyStdOut, game)
 		cli.PlayPoker()
@@ -78,7 +61,7 @@ func TestCLI(t *testing.T) {
 	t.Run("prints an error when a non-numeric value is entered and does not start the game", func(t *testing.T) {
 		out := &bytes.Buffer{}
 		in := userSends("Abcdefg")
-		game := &GameSpy{}
+		game := &poker.GameSpy{}
 
 		cli := poker.NewCLI(in, out, game)
 		cli.PlayPoker()
@@ -89,7 +72,7 @@ func TestCLI(t *testing.T) {
 
 	t.Run("handles incorrect win message", func(t *testing.T) {
 		out := &bytes.Buffer{}
-		game := &GameSpy{}
+		game := &poker.GameSpy{}
 		in := userSends("3", "Sinner is a killer")
 
 		cli := poker.NewCLI(in, out, game)
@@ -110,7 +93,7 @@ func assertMessagesSentToUser(t testing.TB, out *bytes.Buffer, messages ...strin
 	}
 }
 
-func assertGameStartedWith(t testing.TB, game *GameSpy, players int) {
+func assertGameStartedWith(t testing.TB, game *poker.GameSpy, players int) {
 	t.Helper()
 
 	if players != game.StartedWith {
@@ -118,7 +101,7 @@ func assertGameStartedWith(t testing.TB, game *GameSpy, players int) {
 	}
 }
 
-func assertWinner(t testing.TB, game *GameSpy, winner string) {
+func assertWinner(t testing.TB, game *poker.GameSpy, winner string) {
 	t.Helper()
 
 	if winner != game.FinishedWith {
@@ -126,7 +109,7 @@ func assertWinner(t testing.TB, game *GameSpy, winner string) {
 	}
 }
 
-func assertGameNotStarted(t testing.TB, game *GameSpy) {
+func assertGameNotStarted(t testing.TB, game *poker.GameSpy) {
 	t.Helper()
 
 	if game.StartCalled {
@@ -134,7 +117,7 @@ func assertGameNotStarted(t testing.TB, game *GameSpy) {
 	}
 }
 
-func assertGameNotFinished(t testing.TB, game *GameSpy) {
+func assertGameNotFinished(t testing.TB, game *poker.GameSpy) {
 	t.Helper()
 
 	if game.FinishCalled {

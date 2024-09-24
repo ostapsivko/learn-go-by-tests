@@ -1,18 +1,19 @@
 package poker
 
 import (
+	"io"
 	"reflect"
 	"testing"
 )
 
 type StubPlayerStore struct {
-	scores   map[string]int
+	Scores   map[string]int
 	winCalls []string
-	league   League
+	League   League
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
-	return s.scores[name]
+	return s.Scores[name]
 }
 
 func (s *StubPlayerStore) RecordWin(name string) {
@@ -20,7 +21,24 @@ func (s *StubPlayerStore) RecordWin(name string) {
 }
 
 func (s *StubPlayerStore) GetLeague() League {
-	return s.league
+	return s.League
+}
+
+type GameSpy struct {
+	StartedWith  int
+	FinishedWith string
+	StartCalled  bool
+	FinishCalled bool
+}
+
+func (g *GameSpy) Start(numberOfPlayers int, destination io.Writer) {
+	g.StartedWith = numberOfPlayers
+	g.StartCalled = true
+}
+
+func (g *GameSpy) Finish(winner string) {
+	g.FinishedWith = winner
+	g.FinishCalled = true
 }
 
 func AssertResponseBody(t testing.TB, got, want string) {
